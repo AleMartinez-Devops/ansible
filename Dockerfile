@@ -11,7 +11,7 @@ LABEL maintainer="alechivo847@gmail.com" \
     org.label-schema.url="https://github.com/AleMartinez-Devops/docker-ansible" \
     org.label-schema.vcs-url="https://github.com/AleMartinez-Devops/docker-ansible" \
     org.label-schema.vendor="AMSystems" \
-    org.label-schema.docker.cmd="docker run --rm -it -v $(pwd):/ansible -v ~/.ssh/id_rsa:/root/id_rsa amsystems/ansible:2.8-alpine-3.10"
+    org.label-schema.docker.cmd="docker run --rm -it -v $(pwd):/ansible -v ~/.ssh/id_rsa:/root/id_rsa amsystems/ansible:2.8-alpine-3.11"
 
 RUN apk --no-cache add \
         sudo \

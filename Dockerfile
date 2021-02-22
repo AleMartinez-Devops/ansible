@@ -13,17 +13,17 @@ LABEL maintainer="alechivo847@gmail.com" \
     org.label-schema.vendor="AMSystems" \
     org.label-schema.docker.cmd="docker run --rm -it -v $(pwd):/ansible -v ~/.ssh/id_rsa:/root/id_rsa amsystems/ansible:2.8-alpine-3.11"
 
-ENV ANSIBLE_VERSION=2.10.3
+ENV ANSIBLE_VERSION=2.8.0
 
-RUN echo "****** Install sudo ******" && \
+RUN echo "****** Install sudo and tools ******" && \
     apk --no-cache add \
         sudo \
-        python3\
-        py3-pip \
+        python3 \
+        py-pip \
         openssl \
         ca-certificates \
         sshpass \
-        openssh-client \
+        openssh \
         rsync \
         git && \
     echo "****** Install system dependencies ******" && \
@@ -37,7 +37,7 @@ RUN echo "****** Install sudo ******" && \
     pip3 install ansible==${ANSIBLE_VERSION} boto boto3 && \
     pip3 install mitogen ansible-lint jmespath && \
     echo "****** Installing handy tools (optional) ******"  && \
-    pip3 install --upgrade pywinrm && \
+    pip3 install --upgrade pycrypto pywinrm && \
     echo "****** Remove unused system librabies ******" && \
     apk del build-dependencies && \
     rm -rf /var/cache/apk/*

@@ -37,7 +37,7 @@ RUN echo "****** Install sudo ******" && \
     pip3 install ansible==${ANSIBLE_VERSION} boto boto3 && \
     pip3 install mitogen ansible-lint jmespath && \
     echo "****** Installing handy tools (optional) ******"  && \
-    pip3 install --upgrade pycrypto pywinrm && \
+    pip3 install --upgrade pywinrm && \
     echo "****** Remove unused system librabies ******" && \
     apk del build-dependencies && \
     rm -rf /var/cache/apk/*

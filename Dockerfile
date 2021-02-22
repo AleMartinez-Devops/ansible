@@ -13,7 +13,10 @@ LABEL maintainer="alechivo847@gmail.com" \
     org.label-schema.vendor="AMSystems" \
     org.label-schema.docker.cmd="docker run --rm -it -v $(pwd):/ansible -v ~/.ssh/id_rsa:/root/id_rsa amsystems/ansible:2.8-alpine-3.11"
 
-RUN apk --no-cache add \
+ENV ANSIBLE_VERSION=2.10.3
+
+RUN echo "****** Install sudo ******" && \
+    apk --no-cache add \
         sudo \
         python3\
         py3-pip \
@@ -23,21 +26,28 @@ RUN apk --no-cache add \
         openssh-client \
         rsync \
         git && \
+    echo "****** Install system dependencies ******" && \
     apk --no-cache add --virtual build-dependencies \
         python3-dev \
         libffi-dev \
         openssl-dev \
         build-base && \
+    echo "****** Install ansible and python dependencies ******" && \
     pip3 install --upgrade pip cffi wheel && \
-    pip3 install ansible==2.10.3 && \
+    pip3 install ansible==${ANSIBLE_VERSION} boto boto3 && \
     pip3 install mitogen ansible-lint jmespath && \
-    pip3 install --upgrade pywinrm && \
+    echo "****** Installing handy tools (optional) ******"  && \
+    pip3 install --upgrade pycrypto pywinrm && \
+    echo "****** Remove unused system librabies ******" && \
     apk del build-dependencies && \
     rm -rf /var/cache/apk/*
-
-RUN mkdir /ansible && \
+    
+RUN set -xe && \
+    echo "****** Run root ansible ******" && \
+    mkdir /ansible && \
     mkdir -p /etc/ansible && \
-    echo 'localhost' > /etc/ansible/hosts
+    echo -e "[local]\nlocalhost ansible_connection=local" > \
+    /etc/ansible/hosts
 
 WORKDIR /ansible
 

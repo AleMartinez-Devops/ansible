@@ -1,5 +1,5 @@
 # pull base image
-FROM alpine:3.12
+FROM alpine:3.11
 
 # Labels.
 LABEL maintainer="alechivo847@gmail.com" \
@@ -13,31 +13,25 @@ LABEL maintainer="alechivo847@gmail.com" \
     org.label-schema.vendor="AMSystems" \
     org.label-schema.docker.cmd="docker run --rm -it -v $(pwd):/ansible -v ~/.ssh/id_rsa:/root/id_rsa amsystems/ansible:2.8-alpine-3.11"
 
-ENV ANSIBLE_VERSION=2.8.0
+ENV ANSIBLE_VERSION=2.9.18
 
-RUN echo "****** Install sudo and tools ******" && \
-    apk --no-cache add \
-        sudo \
-        python3 \
-        py-pip \
-        openssl \
-        ca-certificates \
-        sshpass \
-        openssh \
-        rsync \
-        git && \
+RUN set -xe && \
+    echo "****** Install sudo ******" && \
+    apk --update add sudo  && \
+    \
     echo "****** Install system dependencies ******" && \
-    apk --no-cache add --virtual build-dependencies \
-        python3-dev \
-        libffi-dev \
-        openssl-dev \
-        build-base && \
+    apk --update --no-cache --progress add py-psutil py-pip \
+    openssl ca-certificates git openssh sshpass rsync  && \
+    apk --update add --virtual build-dependencies \
+		python-dev libffi-dev openssl-dev build-base  && \
+    \
     echo "****** Install ansible and python dependencies ******" && \
-    pip3 install --upgrade pip cffi wheel && \
-    pip3 install ansible==${ANSIBLE_VERSION} boto boto3 && \
-    pip3 install mitogen ansible-lint jmespath && \
+    pip install --upgrade pip cffi wheel && \
+    pip install ansible==${ANSIBLE_VERSION} boto boto3  && \
+    \
     echo "****** Installing handy tools (optional) ******"  && \
-    pip3 install --upgrade pycrypto pywinrm && \
+    pip install --upgrade pycrypto pywinrm && \
+    \
     echo "****** Remove unused system librabies ******" && \
     apk del build-dependencies && \
     rm -rf /var/cache/apk/*
@@ -50,5 +44,8 @@ RUN set -xe && \
     /etc/ansible/hosts
 
 WORKDIR /ansible
+ONBUILD COPY . ansible/
+
+# COPY /playbook/*.yml /usr/local/bin/
 
 CMD [ "ansible-playbook", "--version" ]
